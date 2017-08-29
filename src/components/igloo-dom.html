@@ -1,0 +1,93 @@
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<script type="text/javascript" src="../../bower_components/jquery/dist/jquery.js"></script>
+
+<dom-module id="igloo-dom">
+<template>
+  <h2>DOM Approach</h2>
+
+  <div>
+    <div>
+      <paper-checkbox class="all-stages" noink value$="" on-change="_selectAllStagesToggle"><span>Check All</span></paper-checkbox>
+    </div>
+    <hr />
+    <template is="dom-repeat" items="{{stages}}">
+      <div>
+        <paper-checkbox class="stage" noink on-change="_stageChanged" value$="{{item.value}}" checked="{{item.checked}}">
+          <span>{{item.label}}</span>
+        </paper-checkbox>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script type="text/javascript">
+  window.DEFAULT_STAGE_ARR = "ADE".split("")
+
+  new Polymer({
+    is: "igloo-dom",
+
+    ready: function () {
+      const stages =
+        "ABCDEFGHIJKLMNOP"
+        .split("")
+        .map(function (letter) {
+          return {
+            label: `Option ${letter}`,
+            value: letter
+          }
+        })
+
+      this.set("stages", stages)
+      this.selectedStages = []
+      this.pushStageToArray(window.DEFAULT_STAGE_ARR)
+    },
+
+    _stageChanged: function (e) {
+      var index, stage = e.target
+      if (stage.checked) {
+        this.push("selectedStages", stage.value)
+        return
+      }
+      index = this.selectedStages.indexOf(stage.value)
+      this.splice("selectedStages", index, 1)
+      $(".all-stages").attr("checked", false)
+    },
+
+
+    _selectAllStagesToggle: function (e) {
+      this.splice("selectedStages", 0, this.selectedStages.length)
+
+      if (e.target.checked) {
+        this._selectAllStages()
+        return
+      }
+
+      this._deselectAllStages()
+    },
+
+    _selectAllStages: function () {
+      var that = this
+      $(this).find('.selectall').attr('checked', true)
+      $(this).find('.stage').attr('checked', true)
+      $('.stage').each(function () {
+        that.push("selectedStages", this.value)
+      })
+    },
+
+    _deselectAllStages: function () {
+      $(this).find('.stage').attr('checked', false)
+      this.pushStageToArray(window.DEFAULT_STAGE_ARR)
+    },
+
+    pushStageToArray: function (stages) {
+      var that = this
+      stages = stages || []
+      stages.forEach(function (item) {
+        that.push("selectedStages", item)
+        var selector = 
+        $(".stage[value='" + item + "']", that).attr("checked", true)
+      })
+    }
+  })
+</script>
+</dom-module>

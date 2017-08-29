@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="igloo-state">
+<template>
+  <h2>Functional/State Approach</h2>
+
+  <div>
+    <div>
+      <paper-checkbox class="all-stages" noink value$="" on-change="_stageAllChanged" checked={{checkAll}}><span>Check All</span></paper-checkbox>
+    </div>
+    <hr />
+    <template is="dom-repeat" items="{{stages}}">
+      <div>
+        <paper-checkbox noink on-change="_stageChanged" value$="{{item.value}}" checked="{{item.checked}}">
+          <span>{{item.label}}</span>
+        </paper-checkbox>
+      </div>
+    </template>
+  </div>
+</template>
+
+<script>
+  new Polymer({
+    is: "igloo-state",
+
+
+    ready: function () {
+      this.set("stages", this.defaultStages())
+      this.set("checkAll", false)
+    },
+
+
+    defaultStages: function () {
+      const checkedDefaults = "ADE"
+      return this.getStagesCollection(checkedDefaults)
+    },
+
+
+    getStagesCollection: function (checkedLetters) {
+      return "ABCDEFGHIJKLMNOP"
+        .split("")
+        .map(function (letter) {
+          return {
+            label: `Option ${letter}`,
+            value: letter,
+            checked: checkedLetters.indexOf(letter) >= 0
+          }
+        })
+    },
+
+
+    _stageChanged: function (e) {
+      const _this = this
+      const stages = this.get("stages").map(function (stage) {
+        if (stage.value == e.target.value) {
+          return _this._setCheckedOf(stage, e.target.checked)
+        }
+
+        return stage
+      })
+
+      this.set("stages", stages)
+      this._setCheckAll(stages)
+    },
+
+
+    _stageAllChanged: function (e) {
+      var stages = this.defaultStages()
+      if (e.target.checked) {
+
+        const _this = this
+        stages = stages.map(function (stage) {
+          return _this._setCheckedOf(stage, true)
+        })
+      }
+      this.set("stages", stages)
+      this._setCheckAll(stages)
+    },
+
+
+    _setCheckedOf: function (stage, checked) {
+      return Object.assign({}, stage, { checked: checked })
+    },
+
+
+    _setCheckAll: function (stages) {
+      const areAllStagesChecked =
+        stages.every(function (stage) { return stage.checked })
+
+      this.set("checkAll", areAllStagesChecked)
+    }
+  })
+</script>
+</dom-module>

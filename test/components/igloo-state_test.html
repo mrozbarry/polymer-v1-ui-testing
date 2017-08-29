@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ui-testing-app test</title>
+
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../src/components/igloo-state.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <igloo-state></igloo-state>
+      </template>
+    </test-fixture>
+
+    <script>
+      describe("igloo-state", function () {
+        var element
+
+        beforeEach(function () {
+          element = fixture("BasicTestFixture")
+        })
+
+        it("initializes with default checks", function () {
+          var checked = element.stages
+            .filter(function (checkbox) { return checkbox.checked })
+            .map(function (checkbox) { return checkbox.value })
+            .join("")
+
+          expect(checked).to.equal("ADE")
+
+          var unchecked = element.stages
+            .filter(function (checkbox) { return !checkbox.checked })
+            .map(function (checkbox) { return checkbox.value })
+            .join("")
+
+          expect(unchecked).to.equal("BCFGHIJKLMNOP")
+        })
+
+
+        it("can update a stage", function () {
+          expect(element._setCheckedOf({ value: "A", checked: false }, true))
+            .to.deep.equal({ value: "A", checked: true })
+        })
+
+
+        it("updates a stage when an event is fired", function () {
+          var valueToChange = "O"
+
+          var stage =
+            element.stages.find(function (s) { return s.value == valueToChange })
+
+          expect(stage.checked).to.equal(false)
+
+          element._stageChanged({ target: { value: valueToChange, checked: true } })
+          var stage =
+            element.stages.find(function (s) { return s.value == valueToChange })
+
+          expect(stage.checked).to.equal(true)
+        })
+
+
+        it("updates checkAll when all stages are checked", function () {
+          expect(element.checkAll).to.equal(false)
+
+          "ABCDEFGHIJKLMNOP".split("").forEach(function (letter) {
+            element._stageChanged({ target: { value: letter, checked: true } })
+          })
+
+          expect(element.checkAll).to.equal(true)
+        })
+
+
+        it("can toggle all stages at once", function () {
+          expect(element.checkAll).to.equal(false)
+          element._stageAllChanged({ target: { checked: true } })
+          expect(element.checkAll).to.equal(true)
+        })
+
+
+        it("will reset all stages when unchecking all changed", function () {
+          "ABCDEFGHI".split("").forEach(function (letter) {
+            element._stageChanged({ target: { value: letter, checked: true } })
+          })
+          expect(element.stages).to.not.deep.equal(element.defaultStages())
+
+          element._stageAllChanged({ target: { checked: false } })
+          expect(element.stages).to.deep.equal(element.defaultStages())
+        })
+
+      })
+    </script>
+
+
+  </body>
+</html>

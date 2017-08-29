@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ui-testing-app test</title>
+
+    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../../src/components/igloo-dom.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <igloo-dom></igloo-dom>
+      </template>
+    </test-fixture>
+
+    <script type="text/javascript">
+      xdescribe("igloo-dom", function () {
+        var element
+
+        beforeEach(function () {
+          element = fixture("BasicTestFixture")
+        })
+
+        it("initializes with default checks", function (done) {
+          var defaultLetters = "ADE".split("")
+          var nondefaultLetters = "BCFGHIJKLMNOP".split("")
+
+          // So, flush isn't doing the trick for me :(
+          flush(function () {
+            for(var letter of defaultLetters) {
+
+              var paperCheck = Polymer.dom(element.root).querySelectorAll("paper-checkbox.stage[value='" + letter + "']")[0]
+              assert.notEqual(paperCheck, undefined)
+              var isLetterChecked = paperCheck.checked
+              expect(isLetterChecked).to.equal(true)
+            }
+
+            for(var letter of nondefaultLetters) {
+              var paperCheck = Polymer.dom(element.root).querySelectorAll("paper-checkbox.stage[value='" + letter + "']")[0]
+              assert.notEqual(paperCheck, undefined)
+              var isLetterChecked = paperCheck.checked
+              expect(isLetterChecked).to.equal(false)
+            }
+
+            done()
+          })
+        })
+
+
+        it("checks all when the first checkbox is checked", function (done) {
+          element.$$("paper-checkbox").click()
+          flush(function () {
+            expect(element.selectedStages).to.deep.equal("ABCDEFGHIJKLMNOP".split(""))
+            done()
+          })
+        })
+
+
+        it("unchecks all when the first checkbox is checked, then unchecked", function (done) {
+          element.$$("paper-checkbox").click()
+          element.$$("paper-checkbox").click()
+          flush(function () {
+            expect(element.selectedStages).to.deep.equal([])
+            done()
+          })
+        })
+      })
+    </script>
+
+  </body>
+</html>

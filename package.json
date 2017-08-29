@@ -1,0 +1,23 @@
+{
+  "name": "ui-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/polymer test",
+    "serve": "./node_modules/.bin/polymer serve"
+  },
+  "author": "Alex Barry",
+  "license": "MIT",
+  "devDependencies": {
+    "replay": "^2.1.2",
+    "zombie": "^5.0.7"
+  },
+  "dependencies": {
+    "bower": "^1.8.0",
+    "polymer-cli": "^1.5.1"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "ui-testing",
+  "short_name": "ui-testing",
+  "start_url": "/",
+  "display": "standalone"
+}
